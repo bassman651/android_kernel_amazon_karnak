@@ -233,11 +233,21 @@
 
 #endif	/* gcc version >= 40000 specific checks */
 
-#if __has_attribute(__no_sanitize_address__)
-#define __no_sanitize_address __attribute__((no_sanitize_address))
-#else
-#define __no_sanitize_address
+/*
+* Older GCCs (< 5) don't support __has_attribute, so instead of checking
+* __has_attribute(__no_sanitize_address__) do a GCC version check.
+*/
+#ifndef __has_attribute
+# define __has_attribute(x) __GCC4_has_attribute_##x
+# define __GCC4_has_attribute___no_sanitize_address__ (__GNUC_MINOR__ >= 8)
 #endif
+
+/* #if __has_attribute(__no_sanitize_address__)
+ * #define __no_sanitize_address __attribute__((no_sanitize_address))
+ * #else
+ * #define __no_sanitize_address
+ * #endif
+ */
 
 #if GCC_VERSION >= 50100
 #define COMPILER_HAS_GENERIC_BUILTIN_OVERFLOW 1
